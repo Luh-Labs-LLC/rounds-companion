@@ -34,9 +34,29 @@ is `gemini-3.5-flash-lite` (no billing required).
 | Job | Where | Why |
 |---|---|---|
 | Club suggestion for a distance | **No AI**: plain math over the golfer's stored carry yardages | Deterministic; an LLM adds nothing |
-| Shorthand shot to a structured record `{ club, distanceYards, outcome, missDirection, lie, notes }` | **On-device first** | Must work in airplane mode, mid-round |
-| "Today's miss pattern" (2 sentences from this round's shots) | **On-device first** | Small context, private, offline |
+| Spoken shot (on-device speech recognition) to text | **On-device** (Apple Speech) | Hands-free between swings, airplane mode |
+| Shot text to a structured record `{ club, distanceYards, outcome, missDirection, lie, notes }` | **On-device first** (hybrid) | Must work in airplane mode, mid-round |
+| In-round caddie: today's miss pattern phrased in 2 sentences from stats computed in code | **On-device first** (hybrid) | Small context, private, offline |
+| Scorecard or tee-sign photo to hole pars and yardages (before the round), or a finished card (after) | **Cloud by capability**: the on-device model takes text only, so the hybrid session falls back to Gemini and the badge flips | Removes manual course setup; shows routing by capability |
 | Post-round debrief | **Cloud** | Whole round, longer output |
+
+Image fallback verified in firebase-ios-sdk 12.19.3: a non-text prompt part
+makes the on-device session throw `unsupportedPromptContent`
+(`FirebaseAI/Sources/Types/Public/Part.swift`) and `HybridModelSession` retries
+on the secondary model, **unless the on-device session already has history**.
+Use a fresh session per scan.
+
+Out of scope (owner, 2026-11-23): phone launch monitor (ball/club speed),
+LiDAR green reading, swing tempo. None uses Firebase AI Logic, and the first
+two cannot be measured honestly or tested on a real green before the deadline.
+
+### Judging (owner-supplied rules)
+
+Four equally weighted criteria; ties broken in this order: **Technological
+Implementation** (how effectively the app uses Firebase AI Logic hybrid
+inference), **Design** (a complete, coherent product), **Potential Impact**,
+**Quality of the Idea**. Multi-platform entries get strong Grand Prize
+consideration. App Check debug tokens are accepted.
 
 Guardrails:
 - A deterministic shorthand parser covers common forms (`7i 162y`, `PW 95`,
@@ -79,9 +99,9 @@ and uploads to TestFlight. Agents on Windows cannot compile Swift locally.
 |---|---|---|
 | Mon Nov 23 | Repos, Firebase project, app ID; confirm the phone is on iOS 27 with Apple Intelligence on | |
 | Tue Nov 24 | SwiftUI skeleton; one on-device call through Firebase AI Logic; internal TestFlight build | |
-| Wed Nov 25 | Shot logging (voice or shorthand), local storage, on-device miss pattern; **submit external TestFlight build for beta review** | No working on-device call on the phone by end of day: stop |
-| Thu Nov 26 | Cloud debrief, Firestore sync, badge (Thanksgiving: no owner time needed) | |
-| Fri Nov 27 | Polish and error states; airplane-mode test outdoors; web review **only if the iOS core is done** | |
+| Wed Nov 25 | Shot logging (voice and shorthand), local storage, on-device caddie; **submit external TestFlight build for beta review** | No working on-device call on the phone by end of day: stop |
+| Thu Nov 26 | Scorecard / tee-sign photo (cloud by capability), cloud debrief, Firestore sync (Thanksgiving: no owner time needed) | |
+| Fri Nov 27 | Thin Chrome web companion synced via Firestore (multi-platform; insurance if TestFlight review stalls) **only if the iOS core is solid Thursday night**; otherwise polish | |
 | Sat Nov 28 | Web review or more polish; README, setup guide, "built during the contest" notes | |
 | Sun Nov 29 | Final fixes; record the video (under 3 min, YouTube, English) | |
 | Mon Nov 30 | Submit by noon PT; freeze the repo | |
