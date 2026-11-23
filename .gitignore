@@ -1,0 +1,36 @@
+# Secrets and per-developer config: never commit
+GoogleService-Info.plist
+google-services.json
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+*AppCheckDebugToken*
+*appcheck-debug-token*
+
+# Xcode / Swift
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.build/
+
+# Node / web
+node_modules/
+dist/
+coverage/
+
+# Firebase local
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
