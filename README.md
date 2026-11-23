@@ -28,7 +28,11 @@ On a Mac with Xcode 27: put your `GoogleService-Info.plist` in
 
 ## Third-party code and tools
 
-Everything in this repo was written fresh for it. It depends on:
+Rounds Companion is part of the StatLab family of apps from Luh Labs LLC and
+will later link into StatLab Sports Network. All code in this repo was written
+during #BuildHybridAI 2026; none of it comes from other StatLab projects.
+
+It depends on:
 
 - [firebase-ios-sdk](https://github.com/firebase/firebase-ios-sdk) 12.19.3
   (Apache 2.0): Firebase AI Logic, App Check, Core. Pulled by Swift Package Manager.
