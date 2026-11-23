@@ -3,7 +3,7 @@
 name: RoundsCompanion
 
 options:
-  bundleIdPrefix: com.luhlabs
+  bundleIdPrefix: com.getstatlab
   deploymentTarget:
     iOS: "26.0"
   createIntermediateGroups: true
@@ -72,7 +72,7 @@ targets:
       base:
         # The one place the bundle ID lives. It must match the App ID in the
         # Apple developer account and the BUNDLE_ID in GoogleService-Info.plist.
-        PRODUCT_BUNDLE_IDENTIFIER: com.luhlabs.roundscompanion
+        PRODUCT_BUNDLE_IDENTIFIER: com.getstatlab.roundscompanion
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: NO

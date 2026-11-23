@@ -9,7 +9,7 @@ Confirm each with the owner at the start of a session; do not assume.
 | Devpost registration for #BuildHybridAI, entered as an organization (Luh Labs LLC) | **Done** (owner, 2026-11-23) | Submitter type "Organization", name "Luh Labs LLC" |
 | iPhone on **iOS 27** with Apple Intelligence on and its model downloaded | Confirm | Settings → Apple Intelligence & Siri |
 | Firebase project for this app (not any other product's project), Spark plan | Confirm | AI Logic enabled with the **Gemini Developer API**; App Check enabled |
-| Apple app ID / bundle ID for this app, with the **App Attest** capability | Confirm | Proposed `com.luhlabs.roundscompanion`. If different, change `PRODUCT_BUNDLE_IDENTIFIER` in `ios/project.yml` (the only place it lives) |
+| Apple app ID / bundle ID for this app, with the **App Attest** capability | Confirm | `com.getstatlab.roundscompanion` (owner's choice: the StatLab family of apps under Luh Labs LLC). To change it, edit `PRODUCT_BUNDLE_IDENTIFIER` in `ios/project.yml` (the only place it lives) |
 | iOS app registered in the Firebase project, `GoogleService-Info.plist` downloaded | Confirm | Its `BUNDLE_ID` must match the app ID. It goes into a secret, never the repo |
 | App Check: register the iOS app with the **App Attest** provider | Confirm | Firebase console → Security → App Check → Apps. TestFlight builds are Release builds and use App Attest, not the debug provider |
 | The iPhone registered as a device (its UDID) in the developer account | Confirm | Certificates, Identifiers & Profiles → Devices. Automatic signing may refuse to archive with zero registered devices; to be verified on the first CI run |
