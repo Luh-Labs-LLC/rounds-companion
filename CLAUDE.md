@@ -7,15 +7,16 @@ contract and the reference docs.
 
 ## Start here (state as of 2026-11-23)
 
-- **Nothing is built yet.** The repo holds the licence, `.gitignore`, README
-  and docs. No Xcode project, no workflow.
-- **Owner setup is unconfirmed.** Ask the owner which rows of the
-  `docs/SETUP.md` table are done before depending on them.
-- **First task (Tue Nov 24):** the smallest SwiftUI app that initialises
-  Firebase and App Check (debug provider in debug builds) and makes **one**
-  Firebase AI Logic call that prefers on-device. Show the text result plus
-  the SDK's report of which model answered and the latency. Add the GitHub
-  Actions workflow that builds it with Xcode 27 and uploads to TestFlight.
+- **First task written, not yet compiled.** `ios/` holds the hybrid probe
+  app (XcodeGen spec, SwiftUI, one prefer-on-device call, badge from
+  `modelVersion`, latency, on-device availability). `.github/workflows/ios.yml`
+  compiles it unsigned, then archives and uploads to TestFlight once the
+  secrets exist. Until CI has compiled it, treat the Swift as unverified.
+- **Firebase SDK is pinned to 12.19.3 on purpose.** 13.0.0 removed the
+  hybrid API (`HybridModel` and related types). See `docs/SETUP.md` before
+  touching the version.
+- **Owner setup:** as of 2026-11-23 only the Devpost row is done. Ask the
+  owner about the other `docs/SETUP.md` rows before depending on them.
 - **Kill check (end of Wed Nov 25):** if that call has not run on-device on
   the owner's iPhone, stop and tell the owner. The plan has no fallback that
   keeps the on-course story honest.
@@ -44,7 +45,8 @@ contract and the reference docs.
    Disclose any third-party library or template in the README.
 3. **Verify SDK APIs against installed packages or current Firebase docs.**
    Do not write Firebase AI Logic calls from memory; names and signatures
-   changed recently (`FirebaseAILogic`, SPM-only hybrid, Xcode 27 / iOS 27).
+   changed recently (`FirebaseAILogic`, SPM-only hybrid, Xcode 27 / iOS 27,
+   hybrid removed in 13.0.0). The docs pages lag the SDK; the SDK source wins.
 4. **No invented precision.** Stats are computed in code; the model only
    describes them. No strokes-gained figures. Club suggestions are plain math.
 5. **The routing must be visible.** Every AI result shows whether it ran

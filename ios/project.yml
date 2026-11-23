@@ -1,0 +1,66 @@
+# XcodeGen spec. CI runs `xcodegen generate` to produce RoundsCompanion.xcodeproj,
+# so no hand-written .pbxproj is committed. See README "Third-party tools".
+name: RoundsCompanion
+
+options:
+  bundleIdPrefix: com.luhlabs
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"   # CI overrides with the workflow run number
+    SWIFT_VERSION: "5.0"   # Swift 5 mode: fewer strict-concurrency surprises while we cannot compile locally
+    DEVELOPMENT_TEAM: ""           # CI passes the team ID from a secret
+    CODE_SIGN_STYLE: Automatic
+
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    # Pinned on purpose. Hybrid inference (HybridModel, SystemLanguageModel,
+    # GenerativeModelSession) shipped in 12.13.0 and was removed in 13.0.0
+    # (see FirebaseAI/CHANGELOG.md in the SDK). 12.19.3 is the last 12.x release.
+    exactVersion: 12.19.3
+
+targets:
+  RoundsCompanion:
+    type: application
+    platform: iOS
+    sources:
+      - path: RoundsCompanion
+        excludes:
+          - "**/*.example"
+    dependencies:
+      - package: Firebase
+        product: FirebaseCore
+      - package: Firebase
+        product: FirebaseAILogic
+      - package: Firebase
+        product: FirebaseAppCheck
+    entitlements:
+      path: RoundsCompanion/RoundsCompanion.entitlements
+      properties:
+        # App Check rejects App Attest sandbox tokens, so this is production
+        # for every build (Firebase App Check docs, App Attest provider page).
+        com.apple.developer.devicecheck.appattest-environment: production
+    info:
+      path: RoundsCompanion/Info.plist
+      properties:
+        CFBundleDisplayName: Rounds
+        LSRequiresIPhoneOS: true
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        # The one place the bundle ID lives. It must match the App ID in the
+        # Apple developer account and the BUNDLE_ID in GoogleService-Info.plist.
+        PRODUCT_BUNDLE_IDENTIFIER: com.luhlabs.roundscompanion
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO

@@ -14,7 +14,7 @@ heavy post-round analysis once there is signal again.
 
 | | iOS (primary) | Web (stretch) |
 |---|---|---|
-| SDK | `firebase-ios-sdk` 12.13.0+, product `FirebaseAILogic` | `firebase` 12.5.0+, `firebase/ai` |
+| SDK | `firebase-ios-sdk` **pinned to 12.19.3**, product `FirebaseAILogic` (hybrid exists only in 12.13.0–12.19.x; 13.0.0 removed it) | `firebase` 12.5.0+, `firebase/ai` |
 | Install | Swift Package Manager only (hybrid is SPM-only) | npm |
 | Runtime | **Xcode 27, iOS 27**, Apple Intelligence enabled | **Desktop Chrome 139+** with the Prompt API flag; no mobile browser |
 | On-device scope | Text generation and streaming from text input; structured output supported (detailed docs "coming soon") | Single-turn text only; multi-turn falls back to cloud |
@@ -23,8 +23,11 @@ heavy post-round analysis once there is signal again.
 Backend: Gemini Developer API on the free Spark plan. App Check is required;
 the debug provider is acceptable for judging.
 
-Still to verify in code: the exact inference-mode API on iOS, the property
-that reports which model answered, and the current Gemini Flash model name.
+Verified in the SDK source on 2026-11-23 (details in `docs/SETUP.md`):
+prefer-on-device is `HybridModel(primary: SystemLanguageModel.default,
+secondary: geminiModel(name:))` passed to `generativeModelSession(model:)`;
+the answering model is `response.rawResponse.modelVersion`; the cloud model
+is `gemini-3.5-flash-lite` (no billing required).
 
 ## Routing: what runs where
 
