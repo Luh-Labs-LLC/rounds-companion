@@ -33,6 +33,9 @@ jobs:
           sudo xcode-select -s "$XCODE_APP"
           xcodebuild -version
 
+      - name: Unit tests (RoundsKit)
+        run: swift test --package-path ios/RoundsKit
+
       - name: Install XcodeGen
         run: brew install xcodegen
 

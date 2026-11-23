@@ -23,6 +23,9 @@ packages:
     # GenerativeModelSession) shipped in 12.13.0 and was removed in 13.0.0
     # (see FirebaseAI/CHANGELOG.md in the SDK). 12.19.3 is the last 12.x release.
     exactVersion: 12.19.3
+  RoundsKit:
+    # Local package: shot records, shorthand parser, round stats (tested in CI with `swift test`).
+    path: RoundsKit
 
 schemes:
   # Declared explicitly so CI's `-scheme RoundsCompanion` never depends on
@@ -51,6 +54,7 @@ targets:
         product: FirebaseAILogic
       - package: Firebase
         product: FirebaseAppCheck
+      - package: RoundsKit
     entitlements:
       path: RoundsCompanion/RoundsCompanion.entitlements
       properties:
