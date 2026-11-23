@@ -24,6 +24,18 @@ packages:
     # (see FirebaseAI/CHANGELOG.md in the SDK). 12.19.3 is the last 12.x release.
     exactVersion: 12.19.3
 
+schemes:
+  # Declared explicitly so CI's `-scheme RoundsCompanion` never depends on
+  # xcodebuild auto-creating one.
+  RoundsCompanion:
+    build:
+      targets:
+        RoundsCompanion: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
 targets:
   RoundsCompanion:
     type: application

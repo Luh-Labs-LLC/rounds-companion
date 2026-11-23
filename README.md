@@ -28,7 +28,7 @@ On a Mac with Xcode 27: put your `GoogleService-Info.plist` in
 
 ## Third-party code and tools
 
-Everything in this repo was written for it during the contest. It depends on:
+Everything in this repo was written fresh for it. It depends on:
 
 - [firebase-ios-sdk](https://github.com/firebase/firebase-ios-sdk) 12.19.3
   (Apache 2.0): Firebase AI Logic, App Check, Core. Pulled by Swift Package Manager.

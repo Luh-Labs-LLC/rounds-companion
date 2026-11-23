@@ -12,6 +12,7 @@ Confirm each with the owner at the start of a session; do not assume.
 | Apple app ID / bundle ID for this app, with the **App Attest** capability | Confirm | Proposed `com.luhlabs.roundscompanion`. If different, change `PRODUCT_BUNDLE_IDENTIFIER` in `ios/project.yml` (the only place it lives) |
 | iOS app registered in the Firebase project, `GoogleService-Info.plist` downloaded | Confirm | Its `BUNDLE_ID` must match the app ID. It goes into a secret, never the repo |
 | App Check: register the iOS app with the **App Attest** provider | Confirm | Firebase console → Security → App Check → Apps. TestFlight builds are Release builds and use App Attest, not the debug provider |
+| The iPhone registered as a device (its UDID) in the developer account | Confirm | Certificates, Identifiers & Profiles → Devices. Automatic signing may refuse to archive with zero registered devices; to be verified on the first CI run |
 | App Store Connect record + TestFlight internal group | Confirm | Internal builds need no App Review |
 | App Store Connect API key for CI | Confirm | Users and Access → Integrations → Team keys. Use the **Admin** role: CI signs with cloud-managed certificates via `-allowProvisioningUpdates`, and lower roles may not be allowed to create them |
 | GitHub Actions secrets (below) | Confirm | The owner adds them in repo Settings → Secrets |
