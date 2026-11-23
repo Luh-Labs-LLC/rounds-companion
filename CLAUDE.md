@@ -1,7 +1,38 @@
 # Rounds Companion: agent contract
 
 Read [docs/PLAN.md](docs/PLAN.md) before your first edit. It holds the
-deadline, the routing table and the schedule.
+deadline, the routing table and the schedule. Then
+[docs/SETUP.md](docs/SETUP.md): owner setup, the build path, the secrets
+contract and the reference docs.
+
+## Start here (state as of 2026-11-23)
+
+- **Nothing is built yet.** The repo holds the licence, `.gitignore`, README
+  and docs. No Xcode project, no workflow.
+- **Owner setup is unconfirmed.** Ask the owner which rows of the
+  `docs/SETUP.md` table are done before depending on them.
+- **First task (Tue Nov 24):** the smallest SwiftUI app that initialises
+  Firebase and App Check (debug provider in debug builds) and makes **one**
+  Firebase AI Logic call that prefers on-device. Show the text result plus
+  the SDK's report of which model answered and the latency. Add the GitHub
+  Actions workflow that builds it with Xcode 27 and uploads to TestFlight.
+- **Kill check (end of Wed Nov 25):** if that call has not run on-device on
+  the owner's iPhone, stop and tell the owner. The plan has no fallback that
+  keeps the on-course story honest.
+
+## Environment and conventions
+
+- Agents run on **Windows** (PowerShell and Git Bash). Swift cannot be
+  compiled locally; every iOS build goes through CI (see `docs/SETUP.md`).
+- Owner: Luh Labs LLC owns this repo and its code. The owner's iPhone is
+  the only test device with Apple Intelligence.
+- Commit identity is set in this repo's local git config (the owner's GitHub
+  no-reply address). Never change it, and never set git config `--global`.
+- End every commit message with a `Co-Authored-By:` trailer naming the model
+  that wrote it.
+- Evidence before claims: say which command or build ran and what it
+  printed. "It should work" is not a result; a green CI build is not proof
+  the on-device path ran on the phone.
 
 ## Non-negotiables
 

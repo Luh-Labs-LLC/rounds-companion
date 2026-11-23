@@ -23,4 +23,4 @@ committed; copy the `.example` files and follow the steps here.
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Copyright 2026 Luh Labs LLC. Licensed under Apache 2.0; see [LICENSE](LICENSE).
