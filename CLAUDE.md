@@ -7,19 +7,25 @@ contract and the reference docs.
 
 ## Start here (state as of 2026-11-23)
 
-- **First task written, not yet compiled.** `ios/` holds the hybrid probe
-  app (XcodeGen spec, SwiftUI, one prefer-on-device call, badge from
-  `modelVersion`, latency, on-device availability). `.github/workflows/ios.yml`
-  compiles it unsigned, then archives and uploads to TestFlight once the
-  secrets exist. Until CI has compiled it, treat the Swift as unverified.
+- **Kill check passed (2026-11-23).** TestFlight build 0.1.0 (6) ran the
+  hybrid call on the owner's iPhone: badge On-device, `modelVersion`
+  `apple-foundation-models-system-language-model`, ~2.4 s, also in Airplane Mode.
+- **Build path works end to end.** Every push to `main` runs
+  `.github/workflows/ios.yml`: RoundsKit tests (`swift test`), an unsigned
+  compile, then a manually signed archive uploaded to TestFlight (build
+  number = run number). Signing uses this app's own Apple Distribution
+  certificate and "Rounds Companion App Store" profile from secrets; the API
+  key is App Manager and only uploads. Never switch to cloud signing (needs Admin).
+- **Code layout.** `ios/RoundsKit` holds the tested pure logic (shot records,
+  shorthand parser, merge of parser + model output, round stats, caddie
+  facts). `ios/RoundsCompanion` holds the app (SwiftData rounds, hybrid calls
+  in `AI/`, screens in `Rounds/`, the probe as Diagnostics).
 - **Firebase SDK is pinned to 12.19.3 on purpose.** 13.0.0 removed the
   hybrid API (`HybridModel` and related types). See `docs/SETUP.md` before
   touching the version.
-- **Owner setup:** as of 2026-11-23 only the Devpost row is done. Ask the
-  owner about the other `docs/SETUP.md` rows before depending on them.
-- **Kill check (end of Wed Nov 25):** if that call has not run on-device on
-  the owner's iPhone, stop and tell the owner. The plan has no fallback that
-  keeps the on-course story honest.
+- **Scope is locked in `docs/PLAN.md`** (judging favours Firebase AI Logic
+  hybrid use). Another agent session may be editing docs in this tree: stage
+  files by path, never `git add -A`.
 
 ## Environment and conventions
 

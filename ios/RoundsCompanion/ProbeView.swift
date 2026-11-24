@@ -1,75 +1,73 @@
 import SwiftUI
 
+/// Diagnostics screen: on-device availability and one hybrid call.
 struct ProbeView: View {
     @State private var probe = HybridProbe()
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section("On-device model") {
-                    LabeledContent("Status", value: probe.onDeviceStatus)
-                }
+        List {
+            Section("On-device model") {
+                LabeledContent("Status", value: probe.onDeviceStatus)
+            }
 
-                Section {
-                    Button {
-                        Task { await probe.run() }
-                    } label: {
-                        HStack {
-                            Text("Run hybrid call")
-                            if probe.isRunning {
-                                Spacer()
-                                ProgressView()
-                            }
+            Section {
+                Button {
+                    Task { await probe.run() }
+                } label: {
+                    HStack {
+                        Text("Run hybrid call")
+                        if probe.isRunning {
+                            Spacer()
+                            ProgressView()
                         }
                     }
-                    .disabled(probe.isRunning)
-                } footer: {
-                    Text("Prompt: \(AIConfig.probePrompt)")
                 }
+                .disabled(probe.isRunning)
+            } footer: {
+                Text("Prompt: \(HybridProbe.prompt)")
+            }
 
-                if let result = probe.result {
-                    Section("Answer") {
-                        Text(result.text)
-                    }
-                    Section("Routing (reported by the SDK)") {
-                        LabeledContent("Answered by") {
-                            SourceBadge(source: result.source)
-                        }
-                        LabeledContent("modelVersion", value: result.modelVersion)
-                            .textSelection(.enabled)
-                        LabeledContent("Latency", value: Self.format(result.latency))
-                    }
+            if let result = probe.result {
+                Section("Answer") {
+                    Text(result.text)
                 }
-
-                if let message = probe.errorMessage {
-                    Section("Error") {
-                        Text(message)
-                            .font(.footnote.monospaced())
-                            .textSelection(.enabled)
+                Section("Routing (reported by the SDK)") {
+                    HStack {
+                        Text("Answered by")
+                        Spacer()
+                        SourceBadge(source: result.source)
                     }
+                    LabeledContent("modelVersion", value: result.modelVersion)
+                        .textSelection(.enabled)
+                    LabeledContent("Latency", value: "\(result.latencyMilliseconds) ms")
                 }
             }
-            .navigationTitle("Rounds Companion")
-        }
-    }
 
-    private static func format(_ duration: Duration) -> String {
-        let ms = Double(duration.components.seconds) * 1000
-            + Double(duration.components.attoseconds) / 1e15
-        return String(format: "%.0f ms", ms)
+            if let message = probe.errorMessage {
+                Section("Error") {
+                    Text(message)
+                        .font(.footnote.monospaced())
+                        .textSelection(.enabled)
+                }
+            }
+        }
+        .navigationTitle("Diagnostics")
     }
 }
 
+/// The On-device / Cloud badge shown next to every AI result.
 struct SourceBadge: View {
     let source: AnswerSource
+    var compact = false
 
     var body: some View {
         Label(source.label, systemImage: symbol)
-            .font(.subheadline.bold())
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
+            .font(compact ? .caption.bold() : .subheadline.bold())
+            .padding(.horizontal, compact ? 6 : 10)
+            .padding(.vertical, compact ? 2 : 4)
             .background(tint.opacity(0.15), in: Capsule())
             .foregroundStyle(tint)
+            .fixedSize()
     }
 
     private var symbol: String {
@@ -77,6 +75,7 @@ struct SourceBadge: View {
         case .onDevice: "iphone"
         case .cloud: "cloud"
         case .unknown: "questionmark.circle"
+        case .notUsed: "text.cursor"
         }
     }
 
@@ -85,6 +84,7 @@ struct SourceBadge: View {
         case .onDevice: .green
         case .cloud: .blue
         case .unknown: .gray
+        case .notUsed: .orange
         }
     }
 }

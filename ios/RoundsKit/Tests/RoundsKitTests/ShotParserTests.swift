@@ -109,3 +109,12 @@ struct ShotParserTests {
         #expect(Club.wedge(degrees: 56).shortName == "56°")
     }
 }
+
+struct ShotDisplayTests {
+    @Test func summaryListsRecordedFieldsOnly() {
+        #expect(ShotRecord(club: .iron(7), distanceYards: 162, outcome: .bunker, missDirection: .right).summary
+            == "7i · 162 y · right · bunker")
+        #expect(ShotRecord(club: .putter, outcome: .holed).summary == "Putter · holed")
+        #expect(ShotRecord(club: .driver, outcome: .outOfBounds, lie: .tee).summary == "Driver · OB · from tee")
+    }
+}

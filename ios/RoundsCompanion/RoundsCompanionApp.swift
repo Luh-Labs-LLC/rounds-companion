@@ -1,5 +1,6 @@
 import FirebaseAppCheck
 import FirebaseCore
+import SwiftData
 import SwiftUI
 
 @main
@@ -19,7 +20,8 @@ struct RoundsCompanionApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ProbeView()
+            RootView()
         }
+        .modelContainer(for: [Round.self, LoggedShot.self])
     }
 }

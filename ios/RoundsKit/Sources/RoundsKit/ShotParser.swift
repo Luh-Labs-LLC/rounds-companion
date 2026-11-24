@@ -77,7 +77,7 @@ public enum ShotParser {
 
     // MARK: - Tokens
 
-    private static let separators: Set<Character> = [",", ";", ":", "/", "-", ".", "!", "?", "(", ")"]
+    private static let separators: Set<Character> = [",", ";", ":", "/", "-", ".", "!", "?", "(", ")", "`", "\"", "*"]
 
     private static func tokenize(_ text: String, lowercase: Bool) -> [String] {
         let source = lowercase ? text.lowercased() : text
