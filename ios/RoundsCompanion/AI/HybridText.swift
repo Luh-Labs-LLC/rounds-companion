@@ -1,5 +1,6 @@
 import FirebaseAILogic
 import Foundation
+import UIKit
 
 /// Where an answer came from, read from the SDK's own report
 /// (`GenerateContentResponse.modelVersion`), never inferred. `.notUsed` marks a
@@ -48,6 +49,26 @@ struct AIResult: Sendable {
 enum HybridText {
     /// Prefer the on-device model; fall back to Gemini in the cloud.
     nonisolated static func preferOnDevice(prompt: String, instructions: String? = nil) async throws -> AIResult {
+        let (session, systemModelName) = makeSession(instructions: instructions)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let response = try await session.respond(to: prompt)
+        return result(response, latency: clock.now - start, systemModelName: systemModelName)
+    }
+
+    /// Same hybrid session with a photo. Apple's on-device model accepts text
+    /// only, so the SDK's on-device session throws `unsupportedPromptContent`
+    /// and the hybrid session retries on Gemini: routing by capability.
+    /// (firebase-ios-sdk 12.19.3: Types/Public/Part.swift, HybridModelSession.swift)
+    nonisolated static func preferOnDevice(image: UIImage, prompt: String) async throws -> AIResult {
+        let (session, systemModelName) = makeSession(instructions: nil)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let response = try await session.respond(to: image, prompt)
+        return result(response, latency: clock.now - start, systemModelName: systemModelName)
+    }
+
+    nonisolated private static func makeSession(instructions: String?) -> (GenerativeModelSession, String) {
         let ai = FirebaseAI.firebaseAI(backend: .googleAI())
         let systemModel = FirebaseAI.SystemLanguageModel.default
         let cloudModel = ai.geminiModel(name: AIConfig.cloudModelName)
@@ -55,18 +76,20 @@ enum HybridText {
             model: HybridModel(primary: systemModel, secondary: cloudModel),
             instructions: instructions
         )
+        return (session, systemModel._modelName)
+    }
 
-        let clock = ContinuousClock()
-        let start = clock.now
-        let response = try await session.respond(to: prompt)
-        let latency = clock.now - start
-
-        // The SDK sets modelVersion to the answering model's name. Comparing to the
-        // system model's `_modelName` mirrors the SDK's own hybrid integration test
-        // (FirebaseAI/Tests/TestApp/Tests/Integration/GenerativeModelSessionHybridTests.swift).
+    /// The SDK sets modelVersion to the answering model's name. Comparing to the
+    /// system model's `_modelName` mirrors the SDK's own hybrid integration test
+    /// (FirebaseAI/Tests/TestApp/Tests/Integration/GenerativeModelSessionHybridTests.swift).
+    nonisolated private static func result(
+        _ response: GenerativeModelSession.Response<String>,
+        latency: Duration,
+        systemModelName: String
+    ) -> AIResult {
         let modelVersion = response.rawResponse.modelVersion
         let source: AnswerSource
-        if modelVersion == systemModel._modelName {
+        if modelVersion == systemModelName {
             source = .onDevice
         } else if modelVersion.isEmpty || modelVersion == AIConfig.unknownModelVersion {
             source = .unknown
