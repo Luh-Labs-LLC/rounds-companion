@@ -38,6 +38,18 @@ public enum CaddieFacts {
         return lines.joined(separator: "\n")
     }
 
+    /// Facts for the post-round debrief: the caddie facts plus every hole's par,
+    /// score and shots, so the model can refer to holes and clubs without
+    /// inventing anything.
+    public static func roundFacts(for holes: [HoleScore]) -> String {
+        var lines = [facts(for: holes), "", "Hole by hole:"]
+        for hole in holes where !hole.shots.isEmpty {
+            let shots = hole.shots.map(\.summary).joined(separator: "; ")
+            lines.append("Hole \(hole.number), par \(hole.par): \(hole.strokes) strokes. Shots: \(shots)")
+        }
+        return lines.joined(separator: "\n")
+    }
+
     /// True when every number written as digits in `answer` also appears in
     /// `facts`. An answer that invents a figure fails, and the app shows the
     /// computed stats instead of it.

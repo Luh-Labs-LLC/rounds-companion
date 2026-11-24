@@ -52,4 +52,12 @@ struct CaddieFactsTests {
         #expect(facts.contains("Holes played: 0"))
         #expect(facts.contains("No misses by direction recorded"))
     }
+
+    @Test func roundFactsListEachPlayedHole() {
+        let facts = CaddieFacts.roundFacts(for: holes + [HoleScore(number: 3, par: 5, shots: [])])
+        #expect(facts.contains("Hole 1, par 4: 4 strokes. Shots: Driver · right · rough; 7i · green; Putter; Putter · holed"))
+        #expect(facts.contains("Hole 2, par 3: 3 strokes."))
+        #expect(!facts.contains("Hole 3,"))
+        #expect(CaddieFacts.answerUsesOnlyKnownNumbers("On hole 2 the 6i went right into the bunker.", facts: facts))
+    }
 }

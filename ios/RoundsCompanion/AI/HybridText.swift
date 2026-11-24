@@ -68,6 +68,22 @@ enum HybridText {
         return result(response, latency: clock.now - start, systemModelName: systemModelName)
     }
 
+    /// Cloud only (Gemini), for the long post-round debrief: no on-device
+    /// attempt, so it needs signal. The SDK's report still drives the badge.
+    nonisolated static func cloudOnly(prompt: String, instructions: String?) async throws -> AIResult {
+        let ai = FirebaseAI.firebaseAI(backend: .googleAI())
+        let cloudModel = ai.geminiModel(name: AIConfig.cloudModelName)
+        let session = ai.generativeModelSession(model: cloudModel, instructions: instructions)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let response = try await session.respond(to: prompt)
+        return result(
+            response,
+            latency: clock.now - start,
+            systemModelName: FirebaseAI.SystemLanguageModel.default._modelName
+        )
+    }
+
     nonisolated private static func makeSession(instructions: String?) -> (GenerativeModelSession, String) {
         let ai = FirebaseAI.firebaseAI(backend: .googleAI())
         let systemModel = FirebaseAI.SystemLanguageModel.default

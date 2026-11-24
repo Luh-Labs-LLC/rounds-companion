@@ -10,6 +10,11 @@ final class Round {
     var startedAt: Date = Date()
     var finishedAt: Date?
     var pars: [Int] = []
+    /// The cloud debrief, kept once written.
+    var debriefText: String?
+    var debriefModelVersion: String?
+    var debriefSourceRaw: String?
+    var debriefLatencyMs: Int?
 
     @Relationship(deleteRule: .cascade, inverse: \LoggedShot.round)
     var shots: [LoggedShot] = []
