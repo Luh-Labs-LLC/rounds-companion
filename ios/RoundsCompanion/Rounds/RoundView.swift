@@ -13,6 +13,7 @@ struct RoundView: View {
     @State private var isLogging = false
     @State private var message: String?
     @State private var speech = SpeechInput()
+    @State private var location = LocationTracker()
     @FocusState private var entryFocused: Bool
 
     var body: some View {
@@ -47,6 +48,7 @@ struct RoundView: View {
                     .buttonStyle(.borderless)
                     .disabled(hole == round.holeCount)
                 }
+                LabeledContent("GPS", value: location.statusText)
                 LabeledContent("Round", value: stats.holesPlayed == 0
                     ? "No shots yet"
                     : "\(stats.strokes) strokes thru \(stats.holesPlayed), \(ScoreText.toPar(stats.scoreToPar))")
@@ -57,7 +59,13 @@ struct RoundView: View {
                     Text("No shots on this hole yet.").foregroundStyle(.secondary)
                 } else {
                     ForEach(Array(holeShots.enumerated()), id: \.element.id) { index, shot in
-                        ShotRow(number: index + 1, shot: shot)
+                        ShotRow(
+                            number: index + 1,
+                            shot: shot,
+                            measured: index + 1 < holeShots.count
+                                ? ShotMeasure.measure(from: shot.fix, to: holeShots[index + 1].fix)
+                                : nil
+                        )
                     }
                     .onDelete { offsets in
                         for index in offsets { context.delete(holeShots[index]) }
@@ -82,6 +90,8 @@ struct RoundView: View {
         .safeAreaInset(edge: .bottom) {
             entryBar
         }
+        .onAppear { location.start() }
+        .onDisappear { location.stop() }
     }
 
     private var entryBar: some View {
@@ -161,6 +171,8 @@ struct RoundView: View {
         isLogging = true
         message = nil
         let holeNumber = hole
+        // Where the golfer is standing now is where this shot was hit from.
+        let fix = location.usableFix
 
         Task {
             let outcome = await ShotLogger.structure(text)
@@ -169,7 +181,7 @@ struct RoundView: View {
                 message = "Couldn't find a club in “\(text)”. Try something like “7i 150 right”."
                 return
             }
-            let shot = LoggedShot(holeNumber: holeNumber, rawText: text, record: record, ai: outcome.ai)
+            let shot = LoggedShot(holeNumber: holeNumber, rawText: text, record: record, ai: outcome.ai, fix: fix)
             context.insert(shot)
             shot.round = round
             entry = ""
@@ -183,6 +195,7 @@ struct RoundView: View {
 struct ShotRow: View {
     let number: Int
     let shot: LoggedShot
+    var measured: ShotMeasure.Measurement?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -200,6 +213,11 @@ struct ShotRow: View {
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
+            if let measured {
+                Label("GPS measured \(measured.yards) y (±\(measured.uncertaintyYards))", systemImage: "location.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.teal)
+            }
         }
         .padding(.vertical, 2)
     }

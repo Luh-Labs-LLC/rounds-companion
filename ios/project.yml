@@ -72,6 +72,7 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: Rounds uses your location while a round is open to measure how far each shot went. Locations stay on this iPhone.
         NSMicrophoneUsageDescription: Rounds listens when you tap the mic so you can log a shot by voice. Audio stays on this iPhone.
         NSSpeechRecognitionUsageDescription: Rounds turns what you say about a shot into a shot record. Recognition runs on this iPhone, so audio is not sent anywhere.
         # Apps built with the iOS 27 SDK must adopt the scene lifecycle or they

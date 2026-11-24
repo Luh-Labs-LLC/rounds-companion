@@ -53,9 +53,13 @@ final class LoggedShot {
     var sourceRaw: String = AnswerSource.notUsed.rawValue
     var modelVersion: String?
     var latencyMs: Int?
+    /// Where the shot was hit from (the phone's position when it was logged).
+    var latitude: Double?
+    var longitude: Double?
+    var accuracyMeters: Double?
     var round: Round?
 
-    init(holeNumber: Int, rawText: String, record: ShotRecord, ai: AIResult?) {
+    init(holeNumber: Int, rawText: String, record: ShotRecord, ai: AIResult?, fix: GeoFix? = nil) {
         self.holeNumber = holeNumber
         self.rawText = rawText
         self.createdAt = Date()
@@ -63,6 +67,14 @@ final class LoggedShot {
         self.sourceRaw = (ai?.source ?? .notUsed).rawValue
         self.modelVersion = ai?.modelVersion
         self.latencyMs = ai?.latencyMilliseconds
+        self.latitude = fix?.latitude
+        self.longitude = fix?.longitude
+        self.accuracyMeters = fix?.accuracyMeters
+    }
+
+    var fix: GeoFix? {
+        guard let latitude, let longitude, let accuracyMeters else { return nil }
+        return GeoFix(latitude: latitude, longitude: longitude, accuracyMeters: accuracyMeters)
     }
 
     var record: ShotRecord? { try? JSONDecoder().decode(ShotRecord.self, from: recordData) }
