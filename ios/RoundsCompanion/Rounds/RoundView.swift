@@ -12,6 +12,7 @@ struct RoundView: View {
     @State private var entry = ""
     @State private var isLogging = false
     @State private var message: String?
+    @State private var speech = SpeechInput()
     @FocusState private var entryFocused: Bool
 
     var body: some View {
@@ -85,13 +86,31 @@ struct RoundView: View {
 
     private var entryBar: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let message {
+            if speech.isListening {
+                Label("Listening on this iPhone… tap the mic again when you're done.", systemImage: "waveform")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+            } else if case let .unavailable(problem) = speech.state {
+                Text(problem)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else if let message {
                 Text(message)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             HStack(spacing: 10) {
-                TextField("7i 162 right bunker", text: $entry)
+                Button {
+                    toggleListening()
+                } label: {
+                    Image(systemName: speech.isListening ? "stop.circle.fill" : "mic.circle.fill")
+                        .font(.title)
+                        .foregroundStyle(speech.isListening ? Color.red : Color.accentColor)
+                }
+                .disabled(isLogging)
+                .accessibilityLabel(speech.isListening ? "Stop listening" : "Speak a shot")
+
+                TextField(speech.isListening ? "Say the shot…" : "7i 162 right bunker", text: $entry)
                     .textFieldStyle(.roundedBorder)
                     .submitLabel(.send)
                     .focused($entryFocused)
@@ -111,10 +130,33 @@ struct RoundView: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
         .background(.bar)
+        .onChange(of: speech.transcript) { _, words in
+            if speech.isListening { entry = words }
+        }
+    }
+
+    private func toggleListening() {
+        if speech.isListening {
+            speech.stop()
+            return
+        }
+        speech.clearProblem()
+        message = nil
+        entry = ""
+        Task {
+            await speech.start { words in
+                entry = words
+                submit(words)
+            }
+        }
     }
 
     private func logShot() {
-        let text = entry.trimmingCharacters(in: .whitespacesAndNewlines)
+        submit(entry)
+    }
+
+    private func submit(_ raw: String) {
+        let text = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLogging else { return }
         isLogging = true
         message = nil

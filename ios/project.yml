@@ -72,6 +72,8 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
+        NSMicrophoneUsageDescription: Rounds listens when you tap the mic so you can log a shot by voice. Audio stays on this iPhone.
+        NSSpeechRecognitionUsageDescription: Rounds turns what you say about a shot into a shot record. Recognition runs on this iPhone, so audio is not sent anywhere.
         # Apps built with the iOS 27 SDK must adopt the scene lifecycle or they
         # crash at launch; SwiftUI uses scenes, and this states it explicitly.
         UIApplicationSceneManifest:
